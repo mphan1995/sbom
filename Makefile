@@ -4,6 +4,7 @@
 # ============================================
 
 PROJECT_DIR := $(shell pwd)
+PROJECTS_DIR := $(PROJECT_DIR)/projects
 OUTPUT_DIR := $(PROJECT_DIR)/sbom/output
 CONFIG_DIR := $(PROJECT_DIR)/ort-config
 ORT_CONFIG := $(CONFIG_DIR)/ort.conf.yaml
@@ -19,7 +20,6 @@ ORT_BIN := $(shell if [ -x "$(PROJECT_DIR)/tools/ort/ort" ]; then echo "$(PROJEC
 GRYPE := grype
 COSIGN := cosign
 
-
 # Ensure output directory
 prepare:
 	mkdir -p $(OUTPUT_DIR)
@@ -28,27 +28,26 @@ prepare:
 # 1️⃣ BUILD STAGE - Generate SBOM (SPDX + CycloneDX)
 # ============================================
 build: prepare
-	@echo "🔨 Running ORT Analyzer..."
-	$(ORT) analyze \
-		-i $(PROJECT_DIR)/sbom \
-		-o $(OUTPUT_DIR) \
-		--config $(ORT_CONFIG) \
-		--force-overwrite
+	@echo "🔨 Running ORT Analyzer for all projects under $(PROJECTS_DIR)..."
+	$(ORT_BIN) analyze \
+		-i $(PROJECTS_DIR) \
+		-o $(OUTPUT_DIR)
 
 	@echo "📦 Generating SPDX + CycloneDX SBOM..."
-	$(ORT) report \
+	$(ORT_BIN) report \
 		-i $(OUTPUT_DIR)/analyzer-result.yml \
 		-o $(OUTPUT_DIR) \
-		-f SPDX \
-		-f CycloneDXJson
+		-f SpdxDocument \
+		-f CycloneDX
 
 	@echo "✅ Build SBOM generated at $(OUTPUT_DIR)"
+	@ls -lh $(OUTPUT_DIR)
 
 # ============================================
 # 2️⃣ SCAN STAGE - Vulnerability scan using Grype
 # ============================================
 scan: build
-	@echo "🔍 Scanning SBOM with Grype..."
+	@echo "🔍 Scanning CycloneDX SBOM with Grype..."
 	$(GRYPE) sbom:$(OUTPUT_DIR)/analyzer-result.cyclonedx.json \
 		-o json \
 		-c $(GRYPE_CONFIG) > $(OUTPUT_DIR)/grype-scan.json
@@ -110,7 +109,7 @@ clean:
 help:
 	@echo ""
 	@echo "Available targets:"
-	@echo "  make build     - Generate SPDX & CycloneDX SBOM"
+	@echo "  make build     - Generate SPDX & CycloneDX SBOM for all projects/"
 	@echo "  make scan      - Run Grype vulnerability scan"
 	@echo "  make merge     - Merge SBOMs (SPDX + CycloneDX + scan)"
 	@echo "  make validate  - Validate SBOM quality (sbomqs)"
@@ -118,4 +117,3 @@ help:
 	@echo "  make deploy    - Push signed SBOM to registry"
 	@echo "  make clean     - Remove generated files"
 	@echo ""
-
