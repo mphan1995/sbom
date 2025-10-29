@@ -1,0 +1,93 @@
+# =====================================================
+# SBOM-MAX-BUILD Git Ignore File
+# Target: hybrid Gradle + Maven + Python + ORT environment
+# =====================================================
+
+# --- Build artifacts ---
+dist/
+build/
+out/
+target/
+.gradle/
+.mvn/
+**/classes/
+**/bin/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+
+# --- Temporary / cache files ---
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+.tmp/
+.cache/
+**/.DS_Store
+**/.idea/
+**/.vscode/
+
+# --- Python virtual environments ---
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.pyc
+*.pyo
+
+# --- Node.js dependencies (for admin modules) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- SBOM outputs ---
+sbom/*.json
+sbom/*.xml
+sbom/*.spdx
+sbom/*.cdx.json
+sbom/output/
+reports/
+*.html
+
+# --- ORT cache and working data ---
+.ort/
+ort-cache/
+ort-reports/
+ort-output/
+ort-results/
+**/analyzer-result.yml
+
+# --- Local tools / utilities ---
+tools/ort/
+tools/detect.sh
+tools/*.zip
+tools/*.jar
+*.lock
+*.pid
+
+# --- OS specific ---
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# --- Project-specific exclusions ---
+# Ignore compiled test results, but keep sources
+**/test-output/
+**/test-reports/
+
+# Keep your important folders:
+!gradle-app/
+!maven-app/
+!scripts/
+!Makefile
+!ort-config/
+!grype-config/
+!requirements.txt
+!README.md

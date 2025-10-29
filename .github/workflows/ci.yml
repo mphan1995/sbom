@@ -1,0 +1,36 @@
+name: sbom-ci
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build toolchain image
+        run: docker build -t sbom-max-build:ci .
+
+      - name: Generate SBOMs
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work -w /work sbom-max-build:ci             bash -lc 'set -e; scripts/run_ort.sh sbom'
+
+      - name: Merge SBOMs
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work -w /work sbom-max-build:ci             bash -lc 'set -e; scripts/merge_sbom.sh sbom'
+
+      - name: Scan with Grype
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work -w /work sbom-max-build:ci             bash -lc 'set -e; scripts/scan_grype.sh sbom'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-results
+          path: sbom/**

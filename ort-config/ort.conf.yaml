@@ -1,0 +1,32 @@
+ort:
+  analyzer:
+    skipExcluded: true
+    allowDynamicVersions: true
+    enabledPackageManagers:
+      - Gradle
+      - Maven
+    disabledPackageManagers:
+      - NPM
+      - PNPM
+      - Yarn
+  vcs:
+    detectRepositories: false
+  scanner:
+    skipExcluded: true
+  reporter:
+    formats:
+      - SpdxDocument
+      - CycloneDX
+    options:
+      SpdxDocument:
+        outputFile: analyzer-result.spdx.json
+      CycloneDX:
+        outputFile: analyzer-result.cyclonedx.json
+  licenseChoices:
+    repositoryLicenseChoices:
+      - Apache-2.0
+      - MIT
+  enableRepositoryPackageCurations: true
+  licenseFilePatterns:
+    - LICENSE
+    - COPYING
