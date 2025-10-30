@@ -1,29 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
-SBOM_DIR="${1:-sbom}"
-OCI_REPO="${2:?need OCI_REPO}"
-OCI_TAG="${3:?need OCI_TAG}"
 
-SPDX="$SBOM_DIR/merged.spdx.json"
-CDX="$SBOM_DIR/merged.cdx.json"
+# --------------------------------------------
+# CONFIGURATION
+# --------------------------------------------
+SIGNED_SBOM="${1:-sbom/output/signed-sbom.json}"
 
-if [ ! -f "$SPDX" ] && [ ! -f "$CDX" ]; then
-  echo "[push] Neither $SPDX nor $CDX exists. Run 'make merge' first."; exit 1;
+# Gán repo và tag (có thể override từ môi trường)
+OCI_REPO="${OCI_REPO:-201462388357.dkr.ecr.us-east-1.amazonaws.com/max-flaskci-demo}"
+
+# Tạo tag động (dựa trên số version hoặc thời gian)
+# Nếu bạn muốn theo kiểu 1., 2., 3. — dùng FILE_VERSION hoặc COUNT ở đây
+COUNT=$(ls -1 sbom/output/signed-sbom*.json 2>/dev/null | wc -l)
+OCI_TAG="v$((COUNT + 1))"
+
+# Kiểm tra file tồn tại
+if [ ! -f "$SIGNED_SBOM" ]; then
+  echo "[push] ❌ SBOM not found: $SIGNED_SBOM"
+  exit 1
 fi
 
-echo "[push] Upload SBOM to $OCI_REPO:$OCI_TAG"
-if [ -f "$SPDX" ]; then
-  echo "[push] -> SPDX $SPDX"
-  oras push "$OCI_REPO:$OCI_TAG" \
-    --artifact-type application/spdx+json \
-    "$SPDX:application/spdx+json"
-fi
+# Lấy tên file (loại bỏ absolute path)
+SBOM_FILENAME=$(basename "$SIGNED_SBOM")
 
-if [ -f "$CDX" ]; then
-  echo "[push] -> CycloneDX $CDX"
-  oras push "$OCI_REPO:$OCI_TAG" \
-    --artifact-type application/vnd.cyclonedx+json \
-    "$CDX:application/vnd.cyclonedx+json"
-fi
+echo "[push] 📦 Uploading SBOM to ${OCI_REPO}:${OCI_TAG}"
+echo "[push] -> File: ${SIGNED_SBOM}"
 
-echo "[push] Done."
+# --------------------------------------------
+# PUSH to OCI Registry
+# --------------------------------------------
+oras push "${OCI_REPO}:${OCI_TAG}" \
+  --artifact-type application/vnd.cyclonedx+json \
+  "${SIGNED_SBOM}:application/vnd.cyclonedx+json" \
+  --disable-path-validation
+
+echo "[push] ✅ Done. SBOM pushed to ${OCI_REPO}:${OCI_TAG}"
