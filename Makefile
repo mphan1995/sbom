@@ -19,7 +19,7 @@ SPDX_JSON     := $(OUTPUT_DIR)/analyzer-result.spdx.json
 CDX_JSON      := $(OUTPUT_DIR)/analyzer-result.cyclonedx.json
 
 # Analyzed SBOM (Grype)
-GRYPE_JSON    := $(OUTPUT_DIR)/grype-scan.json
+TRIVY_JSON    := $(OUTPUT_DIR)/grype-scan.json
 
 # Final Deployed SBOM
 MERGED_SBOM   := $(OUTPUT_DIR)/merged-sbom.json
@@ -110,7 +110,7 @@ TRIVY := trivy
 TRIVY_JSON_SPDX := $(OUTPUT_DIR)/trivy-scan-spdx.json
 TRIVY_JSON_CDX  := $(OUTPUT_DIR)/trivy-scan-cdx.json
 
-$(GRYPE_JSON): $(SPDX_JSON) $(CDX_JSON)
+$(TRIVY_JSON): $(SPDX_JSON) $(CDX_JSON)
 	@echo "🔍 Running Trivy vulnerability scans (SPDX + CycloneDX)..."
 	@if ! command -v $(TRIVY) >/dev/null 2>&1; then \
 		echo "⚠️ Trivy not found. Install via: https://aquasecurity.github.io/trivy/latest/getting-started/installation/"; \
@@ -126,39 +126,62 @@ $(GRYPE_JSON): $(SPDX_JSON) $(CDX_JSON)
 	@$(TRIVY) sbom "$(CDX_JSON)" --format json --output "$(TRIVY_JSON_CDX)" || true
 
 	# Merge hai kết quả
-	@echo "🧩 Combining SPDX & CycloneDX scan results -> $(GRYPE_JSON)"
-	@jq -s '{Results: (.[0].Results + .[1].Results)}' "$(TRIVY_JSON_SPDX)" "$(TRIVY_JSON_CDX)" > "$(GRYPE_JSON)"
-	@echo "✅ Trivy combined scan saved to $(GRYPE_JSON)"
+	@echo "🧩 Combining SPDX & CycloneDX scan results -> $(TRIVY_JSON)"
+	@jq -s '{Results: (.[0].Results + .[1].Results)}' "$(TRIVY_JSON_SPDX)" "$(TRIVY_JSON_CDX)" > "$(TRIVY_JSON)"
+	@echo "✅ Trivy combined scan saved to $(TRIVY_JSON)"
 
-scan: $(GRYPE_JSON)
+scan: $(TRIVY_JSON)
 
 # ------------------------------------------------
-# MERGE
+# MERGE (using CycloneDX CLI)
 # ------------------------------------------------
-$(MERGED_SBOM): $(SPDX_JSON) $(CDX_JSON) $(GRYPE_JSON)
-	@echo "🧩 Merging SBOMs -> $@"
-	@bash "$(PROJECT_DIR)/scripts/merge_sbom.sh" \
-		"$(SPDX_JSON)" "$(CDX_JSON)" "$(GRYPE_JSON)" "$(MERGE_CONFIG)" > "$(MERGED_SBOM)"
-	@echo "✅ Merged SBOM ready: $@"
+MERGE_TOOL := cyclonedx
+MERGE_FORMAT := json
+
+$(MERGED_SBOM): $(SPDX_JSON) $(CDX_JSON) $(TRIVY_JSON)
+	@echo "🧩 Merging SBOMs with CycloneDX CLI..."
+	@$(MERGE_TOOL) merge \
+		--input-files $(CDX_JSON) \
+		--input-files $(SPDX_JSON) \
+		--input-files $(TRIVY_JSON) \
+		--output-files $(MERGED_SBOM) \
+		--output-format $(MERGE_FORMAT)
+	@echo "✅ Merged SBOM ready: $(MERGED_SBOM)"
+
+merge: $(MERGED_SBOM)
 
 # ------------------------------------------------
 # VALIDATE
 # ------------------------------------------------
+SBOMQS_BIN := $(PROJECT_DIR)/tools/sbomqs
+VALIDATE_REPORT := $(OUTPUT_DIR)/sbomqs-report.txt
+
 validate: $(MERGED_SBOM)
 	@echo "🧠 Validating SBOM completeness..."
-	@sbomqs score "$(MERGED_SBOM)"
+	@$(SBOMQS_BIN) score "$(MERGED_SBOM)" > "$(VALIDATE_REPORT)"
+	@echo "✅ Validation report saved to: $(VALIDATE_REPORT)"
+
 
 # ------------------------------------------------
 # SIGN
 # ------------------------------------------------
+COSIGN_BIN := $(PROJECT_DIR)/tools/cosign
+COSIGN_KEY := $(PROJECT_DIR)/tools/cosign.key
+SIGNED_SBOM := $(OUTPUT_DIR)/signed-sbom.json
+SBOM_SIGNATURE := $(OUTPUT_DIR)/sbom.sig
+SBOM_BUNDLE := $(OUTPUT_DIR)/sbom.bundle
+
 sign: validate
 	@echo "✍️ Signing merged SBOM..."
-	@"$(COSIGN)" sign blob \
-		--key "$$COSIGN_KEY" \
-		--output-signature "$(OUTPUT_DIR)/sbom.sig" \
-		"$(MERGED_SBOM)"
-	@cp "$(MERGED_SBOM)" "$(SIGNED_SBOM)"
+	@$(COSIGN_BIN) sign-blob \
+		--key $(COSIGN_KEY) \
+		--bundle $(SBOM_BUNDLE) \
+		--output-signature $(SBOM_SIGNATURE) \
+		$(MERGED_SBOM)
+	@cp $(MERGED_SBOM) $(SIGNED_SBOM)
 	@echo "✅ Signed SBOM: $(SIGNED_SBOM)"
+	@echo "📦 Signature bundle: $(SBOM_BUNDLE)"
+
 
 # ------------------------------------------------
 # DEPLOY
@@ -171,8 +194,8 @@ deploy: sign
 # SHORTCUTS
 # ------------------------------------------------
 build: $(SPDX_JSON) $(CDX_JSON)
-scan: $(GRYPE_JSON)
-merge: $(MERGED_SBOM)
+scan: $(TRIVY_JSON)
+
 
 rebuild: clean build
 clean:
@@ -181,10 +204,10 @@ clean:
 
 help:
 	@echo ""
-	@echo "🧭 SBOM-MAX-BUILD Pipeline (2025.11)"
-	@echo "  make build     - Generate SPDX + CycloneDX from Source SBOM"
-	@echo "  make scan      - Analyze vulnerabilities using Grype"
-	@echo "  make merge     - Merge SPDX + CycloneDX + Grype results"
+	@echo "🧭 SBOM-MAX-BUILD Pipeline Test (2025.11)"
+	@echo "  make build     - Generate SPDX + CycloneDX from Source SBOM" as Build Tools
+	@echo "  make scan      - Analyze vulnerabilities using Trivy" - Grype is not appropriate with CI/CD
+	@echo "  make merge     - Merge SPDX + CycloneDX + Trivy results"
 	@echo "  make validate  - Validate merged SBOM completeness"
 	@echo "  make sign      - Sign SBOM with Cosign"
 	@echo "  make deploy    - Push signed SBOM"

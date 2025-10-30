@@ -63,13 +63,26 @@ ort-output/
 ort-results/
 **/analyzer-result.yml
 
-# --- Local tools / utilities ---
+# ===== SBOM-MAX-BUILD sensitive files =====
+# Cosign keys
+tools/cosign.key
+tools/cosign.pub
+
+# Cosign, CycloneDX, ORT, sbomqs binaries
+tools/cosign
+tools/cyclonedx
+tools/sbomqs
 tools/ort/
-tools/detect.sh
-tools/*.zip
-tools/*.jar
-*.lock
-*.pid
+tools/ort.zip
+
+# SBOM output and signatures
+sbom/output/*
+!sbom/output/.gitkeep
+
+# Temporary build artifacts
+*.sig
+*.bundle
+*.tmp
 
 # --- OS specific ---
 Thumbs.db
