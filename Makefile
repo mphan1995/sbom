@@ -184,11 +184,45 @@ sign: validate
 
 
 # ------------------------------------------------
+# VERIFY
+# ------------------------------------------------
+COSIGN_BIN := $(PROJECT_DIR)/tools/cosign
+COSIGN_PUB := $(PROJECT_DIR)/tools/cosign.pub
+SBOM_SIGNATURE := $(OUTPUT_DIR)/sbom.sig
+SIGNED_SBOM := $(OUTPUT_DIR)/signed-sbom.json
+
+verify:
+	@if [ ! -f "$(SIGNED_SBOM)" ]; then \
+		echo "⚠️  No signed SBOM found — skipping verify."; \
+	elif [ ! -f "$(SBOM_SIGNATURE)" ]; then \
+		echo "⚠️  No signature file found — skipping verify."; \
+	else \
+		echo "🔍 Verifying signed SBOM integrity (offline mode)..."; \
+		if $(COSIGN_BIN) verify-blob \
+			--key $(COSIGN_PUB) \
+			--signature $(SBOM_SIGNATURE) \
+			--offline \
+			$(SIGNED_SBOM); then \
+			echo "✅ SBOM signature verified successfully (offline)."; \
+		else \
+			echo "❌ Verification failed — signature mismatch or invalid key."; \
+			exit 1; \
+		fi; \
+	fi
+
+
+# ------------------------------------------------
 # DEPLOY
 # ------------------------------------------------
-deploy: sign
+deploy: verify
+	@if [ ! -f "$(SIGNED_SBOM)" ]; then \
+		echo "🖋️ No signed SBOM found, signing now..."; \
+		$(MAKE) sign; \
+	else \
+		echo "✅ Signed SBOM already exists: $(SIGNED_SBOM), skipping sign."; \
+	fi
 	@bash "$(PROJECT_DIR)/scripts/push_oci.sh" "$(SIGNED_SBOM)"
-	@echo "✅ Deployed successfully."
+	@echo "🚀 Deployed successfully."
 
 # ------------------------------------------------
 # SHORTCUTS
@@ -210,5 +244,5 @@ help:
 	@echo "  make merge     - Merge SPDX + CycloneDX + Trivy results"
 	@echo "  make validate  - Validate merged SBOM completeness"
 	@echo "  make sign      - Sign SBOM with Cosign"
-	@echo "  make deploy    - Push signed SBOM"
+	@echo "  make deploy    - Push signed SBOM to ECR (need Private Key for Sign)"
 	@echo "  make clean     - Remove outputs"

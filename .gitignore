@@ -52,6 +52,7 @@ sbom/*.xml
 sbom/*.spdx
 sbom/*.cdx.json
 sbom/output/
+done-output/
 reports/
 *.html
 
