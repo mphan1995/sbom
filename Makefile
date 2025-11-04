@@ -4,7 +4,7 @@
 # ============================================
 
 PROJECT_DIR   := $(shell pwd)
-PROJECTS_DIR  := $(PROJECT_DIR)/projects
+PROJECTS_DIR  := $(PROJECT_DIR)/projects/demo-convert-spdx
 OUTPUT_DIR    := $(PROJECT_DIR)/sbom/output
 CONFIG_DIR    := $(PROJECT_DIR)/ort-config
 GRYPE_CONFIG  := $(PROJECT_DIR)/grype-config/grype.yaml
@@ -102,6 +102,25 @@ $(SPDX_JSON): $(SPDX_YML)
 	@echo "🔄 Converting SPDX YAML -> JSON"
 	@/snap/bin/yq -o=json '.' "$(SPDX_YML)" > "$(SPDX_JSON)"
 	@echo "✅ SPDX JSON ready: $(SPDX_JSON)"
+
+build: $(SPDX_JSON) $(CDX_JSON)
+
+
+# ------------------------------------------------
+# CONVERT SPDX (parse JSON -> SPDX Object)
+# ------------------------------------------------
+CONVERT_SCRIPT := $(PROJECT_DIR)/scripts/convert_spdx.py
+SPDX_FILE := $(OUTPUT_DIR)/analyzer-result.spdx.json
+
+convert-spdx:
+	@if [ ! -f "$(SPDX_FILE)" ]; then \
+		echo "⚠️  SPDX JSON not found. Please run 'make build' first."; \
+	else \
+		echo "🔍 Converting SPDX JSON to SPDX Object (Python SDK)..."; \
+		python3 $(CONVERT_SCRIPT) $(SPDX_FILE); \
+	fi
+
+
 
 # ------------------------------------------------
 # SCAN (Trivy v0.54+) - scan cả SPDX + CycloneDX
@@ -227,10 +246,8 @@ deploy: verify
 # ------------------------------------------------
 # SHORTCUTS
 # ------------------------------------------------
-build: $(SPDX_JSON) $(CDX_JSON)
+
 scan: $(TRIVY_JSON)
-
-
 rebuild: clean build
 clean:
 	@rm -rf "$(OUTPUT_DIR)"

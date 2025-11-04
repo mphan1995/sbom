@@ -53,6 +53,7 @@ sbom/*.spdx
 sbom/*.cdx.json
 sbom/output/
 done-output/
+queue_projects/
 reports/
 *.html
 
@@ -98,6 +99,7 @@ Desktop.ini
 
 # Keep your important folders:
 !gradle-app/
+!demo-convert-spdx/
 !maven-app/
 !scripts/
 !Makefile

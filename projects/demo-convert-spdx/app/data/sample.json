@@ -1,0 +1,8 @@
+{
+  "project": "SBOM-Demo-Advanced",
+  "items": [
+    {"name": "packageA", "version": "1.0.0"},
+    {"name": "packageB", "version": "2.3.4"},
+    {"name": "packageC", "version": "0.9.1"}
+  ]
+}
