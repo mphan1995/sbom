@@ -152,6 +152,24 @@ $(TRIVY_JSON): $(SPDX_JSON) $(CDX_JSON)
 scan: $(TRIVY_JSON)
 
 # ------------------------------------------------
+# BLACKDUCK SCAN
+# ------------------------------------------------
+
+blackduck-scan:
+	@bash tools/blackduck/run_blackduck.sh
+
+blackduck-offline:
+	java -jar tools/blackduck/detect.jar \
+	--detect.source.path=. \
+	--detect.output.path=sbom/output/blackduck \
+	--blackduck.offline.mode=true \
+	--detect.bom.format=SPDX \
+	--detect.spdx.file.path=sbom/output/blackduck/sbom-blackduck.spdx.json \
+	--detect.project.name=sbom-ericsson-offline
+
+
+
+# ------------------------------------------------
 # MERGE (using CycloneDX CLI)
 # ------------------------------------------------
 MERGE_TOOL := cyclonedx
@@ -242,6 +260,28 @@ deploy: verify
 	fi
 	@bash "$(PROJECT_DIR)/scripts/push_oci.sh" "$(SIGNED_SBOM)"
 	@echo "🚀 Deployed successfully."
+
+# ------------------------------------------------
+# RUNTIME CHECK
+# ------------------------------------------------
+APP_JAR=tools/runtime-agent.jar  # đường dẫn app thật của bạn
+
+build-agent:
+	@echo "🔧 Building runtime-agent.jar ..."
+	javac tools/runtime-agent/*.java
+	jar cmf tools/MANIFEST.MF tools/runtime-agent.jar -C tools/runtime-agent .
+	@echo "✅ Built: tools/runtime-agent.jar"
+
+runtime-check:
+	@echo "🔍 Detecting runtime-only dependencies..."
+	@if [ -f $(APP_JAR) ]; then \
+		java -javaagent:tools/runtime-agent.jar -jar $(APP_JAR); \
+	else \
+		echo "⚠️ Application JAR not found at $(APP_JAR) — skipping runtime run."; \
+	fi
+	python3 tools/compare_sbom.py sbom/output/merged-sbom.json sbom/runtime/runtime-loaded.json
+
+
 
 # ------------------------------------------------
 # SHORTCUTS
