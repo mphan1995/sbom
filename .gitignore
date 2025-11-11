@@ -65,6 +65,8 @@ ort-output/
 ort-results/
 **/analyzer-result.yml
 
+# --- Blackduck Server Hub---
+hub/
 # ===== SBOM-MAX-BUILD sensitive files =====
 # Cosign keys
 tools/cosign.key

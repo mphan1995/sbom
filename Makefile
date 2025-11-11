@@ -4,7 +4,7 @@
 # ============================================
 
 PROJECT_DIR   := $(shell pwd)
-PROJECTS_DIR  := $(PROJECT_DIR)/projects/demo-convert-spdx
+PROJECTS_DIR  := $(PROJECT_DIR)/projects
 OUTPUT_DIR    := $(PROJECT_DIR)/sbom/output
 CONFIG_DIR    := $(PROJECT_DIR)/ort-config
 GRYPE_CONFIG  := $(PROJECT_DIR)/grype-config/grype.yaml
@@ -120,6 +120,13 @@ convert-spdx:
 		python3 $(CONVERT_SCRIPT) $(SPDX_FILE); \
 	fi
 
+# ------------------------------------------------
+# COMPARE SBOMs (DIFF + JQ)
+# ------------------------------------------------
+compare-stats:
+	@echo "📊 Generating SBOM statistics..."
+	@./scripts/compare_sbom_stats.sh > sbom/output/sbom_stats_report.txt
+	@echo "✅ Stats report saved to sbom/output/sbom_stats_report.txt"
 
 
 # ------------------------------------------------
