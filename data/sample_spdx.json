@@ -1,0 +1,20 @@
+{
+  "spdxVersion": "SPDX-2.2",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "sample-spdx",
+  "packages": [
+    {
+      "name": "log4j-core",
+      "versionInfo": "2.14.0",
+      "licenseDeclared": "Apache-2.0"
+    },
+    {
+      "name": "openssl",
+      "versionInfo": "3.0.9"
+    },
+    {
+      "name": "sudo",
+      "versionInfo": "1.9.11"
+    }
+  ]
+}

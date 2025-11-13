@@ -1,0 +1,32 @@
+{
+  "Results": [
+    {
+      "Target": "java-libs",
+      "Vulnerabilities": [
+        { "VulnerabilityID": "CVE-2021-44228", "PkgName": "log4j-core", "InstalledVersion": "2.14.0", "FixedVersion": "2.17.1", "Severity": "CRITICAL", "Title": "Log4Shell RCE in Apache Log4j", "Description": "Remote Code Execution via JNDI", "CVSS": { "nvd": { "V3Score": 10.0 } } },
+        { "VulnerabilityID": "CVE-2021-22096", "PkgName": "spring-core", "InstalledVersion": "5.3.10", "FixedVersion": "5.3.18", "Severity": "HIGH", "Title": "Spring Core DoS vulnerability", "Description": "Improper input validation", "CVSS": { "nvd": { "V3Score": 8.8 } } },
+        { "VulnerabilityID": "CVE-2020-8908", "PkgName": "guava", "InstalledVersion": "30.1.1-jre", "FixedVersion": "31.0.1-jre", "Severity": "MEDIUM", "Title": "Guava Uncontrolled Resource Consumption", "Description": "Potential DoS in ByteStreams", "CVSS": { "nvd": { "V3Score": 6.1 } } }
+      ]
+    },
+    {
+      "Target": "python-libs",
+      "Vulnerabilities": [
+        { "VulnerabilityID": "CVE-2021-3177", "PkgName": "python", "InstalledVersion": "3.10.2", "FixedVersion": "3.10.3", "Severity": "HIGH", "Title": "Python buffer overflow in PyCArg_repr", "Description": "Potential RCE via ctypes", "CVSS": { "nvd": { "V3Score": 8.6 } } },
+        { "VulnerabilityID": "CVE-2022-23990", "PkgName": "numpy", "InstalledVersion": "1.23.4", "FixedVersion": "1.23.5", "Severity": "MEDIUM", "Title": "Numpy Memory Safety Issue", "Description": "Improper buffer boundary checks", "CVSS": { "nvd": { "V3Score": 5.6 } } },
+        { "VulnerabilityID": "CVE-2020-26116", "PkgName": "requests", "InstalledVersion": "2.25.0", "FixedVersion": "2.25.1", "Severity": "LOW", "Title": "Requests Header Injection", "Description": "HTTP header smuggling vulnerability", "CVSS": { "nvd": { "V3Score": 3.7 } } },
+        { "VulnerabilityID": "CVE-2021-33503", "PkgName": "urllib3", "InstalledVersion": "1.25.8", "FixedVersion": "1.26.5", "Severity": "HIGH", "Title": "CRLF injection in HTTP headers", "Description": "Possible HTTP response splitting", "CVSS": { "nvd": { "V3Score": 7.5 } } },
+        { "VulnerabilityID": "CVE-2021-41212", "PkgName": "flask", "InstalledVersion": "2.1.0", "FixedVersion": "2.2.0", "Severity": "MEDIUM", "Title": "Flask Debug PIN Information Disclosure", "Description": "Debug PIN exposure in log", "CVSS": { "nvd": { "V3Score": 5.3 } } }
+      ]
+    },
+    {
+      "Target": "node-libs",
+      "Vulnerabilities": [
+        { "VulnerabilityID": "CVE-2022-29078", "PkgName": "express", "InstalledVersion": "4.18.2", "FixedVersion": "4.18.3", "Severity": "MEDIUM", "Title": "Express XSS via query parameters", "Description": "Unescaped user input in template", "CVSS": { "nvd": { "V3Score": 6.5 } } },
+        { "VulnerabilityID": "CVE-2020-8203", "PkgName": "lodash", "InstalledVersion": "4.17.15", "FixedVersion": "4.17.21", "Severity": "HIGH", "Title": "Lodash Prototype Pollution", "Description": "Prototype pollution in merge()", "CVSS": { "nvd": { "V3Score": 7.4 } } },
+        { "VulnerabilityID": "CVE-2020-28493", "PkgName": "moment", "InstalledVersion": "2.29.1", "FixedVersion": "2.29.2", "Severity": "LOW", "Title": "Moment.js ReDoS vulnerability", "Description": "Inefficient regex in parsing dates", "CVSS": { "nvd": { "V3Score": 3.9 } } },
+        { "VulnerabilityID": "CVE-2021-3749", "PkgName": "axios", "InstalledVersion": "0.21.1", "FixedVersion": "0.21.2", "Severity": "HIGH", "Title": "Axios SSRF vulnerability", "Description": "Unvalidated request URL redirect", "CVSS": { "nvd": { "V3Score": 8.2 } } },
+        { "VulnerabilityID": "CVE-2022-21661", "PkgName": "react", "InstalledVersion": "17.0.1", "FixedVersion": "17.0.2", "Severity": "MEDIUM", "Title": "React DOM Server XSS issue", "Description": "Improper escaping in SSR rendering", "CVSS": { "nvd": { "V3Score": 6.1 } } }
+      ]
+    }
+  ]
+}

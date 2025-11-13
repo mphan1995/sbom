@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>⬆️ Upload SBOM / Trivy Scan</h3>
+  <p>Upload one or more files. Supported: <code>.spdx.json</code>, <code>.cyclonedx.json</code>, <code>trivy-scan.json</code>.</p>
+  <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+    <div class="grid">
+      <label>SBOM file (SPDX or CycloneDX JSON)<br><small>Optional</small><br>
+        <input type="file" name="sbom_file" accept=".json">
+      </label>
+      <label>Trivy scan JSON<br><small>Optional</small><br>
+        <input type="file" name="trivy_file" accept=".json">
+      </label>
+    </div>
+    <div style="margin-top:12px;">
+      <button type="submit">Upload & Parse</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

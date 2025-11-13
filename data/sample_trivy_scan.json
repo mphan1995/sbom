@@ -1,0 +1,51 @@
+{
+  "Results": [
+    {
+      "Target": "java-app",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2021-44228",
+          "PkgName": "log4j-core",
+          "InstalledVersion": "2.14.0",
+          "FixedVersion": "2.17.1",
+          "Severity": "CRITICAL",
+          "Title": "Log4Shell RCE in Apache Log4j",
+          "Description": "JNDI lookup RCE vulnerability",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 10.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2024-23918",
+          "PkgName": "openssl",
+          "InstalledVersion": "3.0.9",
+          "FixedVersion": "3.0.12",
+          "Severity": "HIGH",
+          "Title": "OpenSSL TLS DoS",
+          "Description": "TLS handshake issue",
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.5
+            }
+          }
+        },
+        {
+          "VulnerabilityID": "CVE-2023-22809",
+          "PkgName": "sudo",
+          "InstalledVersion": "1.9.11",
+          "FixedVersion": "1.9.13",
+          "Severity": "MEDIUM",
+          "Title": "Sudo priv-esc",
+          "Description": "Local privilege escalation"
+        }
+      ]
+    }
+  ]
+}

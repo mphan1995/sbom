@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <h3>🤖 AI Advisor</h3>
+  <p>Ask safety questions about your SBOM / Trivy results (e.g. "Gói nào cần fix gấp?").</p>
+  <form id="chatForm">
+    <input id="q" name="q" placeholder="Type your question..." style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a3861;background:#0e1529;color:#e3e8f5;">
+    <div style="margin-top:10px;">
+      <button type="submit">Ask</button>
+    </div>
+  </form>
+  <div id="ans" style="margin-top:16px;white-space:pre-wrap;"></div>
+</div>
+
+<script>
+document.getElementById('chatForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const q = document.getElementById('q').value.trim();
+  if (!q) return;
+  const rsp = await fetch('{{ url_for("chat_api") }}', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: q })
+  });
+  const data = await rsp.json();
+  document.getElementById('ans').textContent = data.answer || data.error || 'No response';
+});
+</script>
+{% endblock %}

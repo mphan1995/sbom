@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid grid-2">
+  <div class="card">
+    <h3>📊 Severity Distribution</h3>
+    <canvas id="severityChart" height="200"></canvas>
+  </div>
+  <div class="card">
+    <h3>🏷️ Top Risky Packages</h3>
+    <canvas id="topPackagesChart" height="200"></canvas>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+  <h3>🧾 Vulnerabilities</h3>
+  <table class="table">
+    <colgroup>
+      <col style="width:8%">
+      <col style="width:14%">
+      <col style="width:8%">
+      <col style="width:14%">
+      <col style="width:6%">
+      <col style="width:35%">
+      <col style="width:15%">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>Severity</th>
+        <th>Package</th>
+        <th>Version</th>
+        <th>CVE</th>
+        <th>Score</th>
+        <th>Title</th>
+        <th>Fixed Version</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in vulns %}
+      <tr>
+        <td>
+          <span class="badge badge-{{ v.severity|lower if v.severity else 'unknown' }}">
+            {{ v.severity or 'unknown' }}
+          </span>
+        </td>
+        <td>{{ v.pkg_name }}</td>
+        <td>{{ v.installed_version }}</td>
+
+        <!-- CVE link -->
+        <td>
+          {% if v.cve_id %}
+            <a href="{{ v.cve_url }}" target="_blank" class="cve-link">{{ v.cve_id }}</a>
+          {% else %}
+            <span style="color:#666;">-</span>
+          {% endif %}
+        </td>
+
+        <!-- CVSS Score -->
+        <td>
+          {% if v.score %}
+            {% set score_class =
+              'score-critical' if v.score >= 9 else
+              'score-high' if v.score >= 7 else
+              'score-medium' if v.score >= 4 else
+              'score-low' %}
+            <span class="score-badge {{ score_class }}">
+              {{ '%.1f'|format(v.score) }}
+            </span>
+          {% else %}
+            <span style="color:#666;">-</span>
+          {% endif %}
+        </td>
+        <td>{{ v.title or v.description }}</td>
+        <td>{{ v.fixed_version or '-' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+const summary = {{ summary_json|safe }};
+renderCharts(summary);
+</script>
+{% endblock %}

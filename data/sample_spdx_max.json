@@ -1,0 +1,27 @@
+{
+  "spdxVersion": "SPDX-2.2",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "ai-sbom-large-sample",
+  "packages": [
+    { "name": "log4j-core", "versionInfo": "2.14.0", "licenseDeclared": "Apache-2.0" },
+    { "name": "spring-core", "versionInfo": "5.3.10", "licenseDeclared": "Apache-2.0" },
+    { "name": "guava", "versionInfo": "30.1.1-jre", "licenseDeclared": "Apache-2.0" },
+    { "name": "jackson-databind", "versionInfo": "2.11.1", "licenseDeclared": "Apache-2.0" },
+    { "name": "openssl", "versionInfo": "3.0.8", "licenseDeclared": "OpenSSL" },
+    { "name": "sudo", "versionInfo": "1.9.12", "licenseDeclared": "GPL-2.0" },
+    { "name": "libcurl", "versionInfo": "7.85.0", "licenseDeclared": "MIT" },
+    { "name": "glibc", "versionInfo": "2.34", "licenseDeclared": "LGPL-2.1" },
+    { "name": "python", "versionInfo": "3.10.2", "licenseDeclared": "PSF" },
+    { "name": "numpy", "versionInfo": "1.23.4", "licenseDeclared": "BSD-3-Clause" },
+    { "name": "requests", "versionInfo": "2.25.0", "licenseDeclared": "Apache-2.0" },
+    { "name": "urllib3", "versionInfo": "1.25.8", "licenseDeclared": "MIT" },
+    { "name": "flask", "versionInfo": "2.1.0", "licenseDeclared": "BSD-3-Clause" },
+    { "name": "jinja2", "versionInfo": "3.0.1", "licenseDeclared": "BSD-3-Clause" },
+    { "name": "setuptools", "versionInfo": "56.0.0", "licenseDeclared": "MIT" },
+    { "name": "express", "versionInfo": "4.18.2", "licenseDeclared": "MIT" },
+    { "name": "lodash", "versionInfo": "4.17.15", "licenseDeclared": "MIT" },
+    { "name": "moment", "versionInfo": "2.29.1", "licenseDeclared": "MIT" },
+    { "name": "axios", "versionInfo": "0.21.1", "licenseDeclared": "MIT" },
+    { "name": "react", "versionInfo": "17.0.1", "licenseDeclared": "MIT" }
+  ]
+}

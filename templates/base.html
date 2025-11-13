@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title or "AI SBOM Dashboard" }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <h2 style="margin:0;">🛡️ AI SBOM Dashboard by Max Phan</h2>
+          <div style="display:flex;gap:8px;">
+            <a class="btn" href="{{ url_for('index') }}">Upload</a>
+            <a class="btn" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="btn" href="{{ url_for('chat_page') }}">AI Chat</a>
+          </div>
+        </div>
+      </div>
+      {% block content %}{% endblock %}
+      <p style="margin-top:24px;color:#6f7fad;">MaX Phan @2025 - SBOM Test</p>
+    </div>
+  </body>
+</html>
