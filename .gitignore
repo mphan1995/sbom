@@ -1,5 +1,88 @@
+# =========================
+# 🧠 Python / Flask / AI SBOM Dashboard
+# =========================
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Python cache & build ---
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# --- Environment & secrets ---
 .env
+.env.local
+*.key
+*.pub
+
+# --- Flask runtime & uploads ---
 uploads/
+instance/
+*.sqlite3
+*.db
+*.log
+*.pid
+
+# --- AI/LLM temporary files ---
+*.jsonl
+*.tmp
+*.cache/
+.cache/
+.openai/
+*.history
+
+# --- SBOM test data (optional large samples) ---
+data/sample_*.json
+!data/sample_cyclonedx.json
+!data/sample_spdx.json
+!data/sample_trivy_scan.json
+
+# --- OS / Editor files ---
 .DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- Reports / output ---
+sbom/output/
+reports/
+logs/
+*.report
+*.html
+
+# --- Node / JS dependencies (if frontend grows) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Docker / deployment artifacts ---
+Dockerfile*
+docker-compose*.yml
+*.tar
+*.gz
+
+# --- Temporary dev / test files ---
+*.bak
+*.old
+*.orig
+test_*.py
+
+# --- Trivy / scanner local DB (if used) ---
+.trivy/
+.trivy-cache/
+.trivyignore
+.trivy.db
